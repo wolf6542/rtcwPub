@@ -172,7 +172,8 @@ client-w32-clean:
 server: CC := gcc
 server: NASM := nasm
 server: CFLAGS := \
-	$(CFLAGSREL) -DBOTLIB -DDEDICATED -DC_ONLY -DDLL_ONLY -DFEATURE_ANTICHEAT
+	$(CFLAGSREL) -DBOTLIB -DDEDICATED -DC_ONLY -DDLL_ONLY
+	#$(CFLAGSREL) -DBOTLIB -DDEDICATED -DC_ONLY -DDLL_ONLY -DFEATURE_ANTICHEAT
 server: LDFLAGS := -m32 -ldl -lm
 server: $(SVOBJS)
 	$(CC) -o wolfded.x86 $(SVOBJS) $(LDFLAGS)
@@ -183,7 +184,8 @@ server-clean:
 server-debug: CC := gcc
 server-debug: NASM := nasm
 server-debug: CFLAGS := \
-	$(DCFLAGSREL) -DBOTLIB -DDEDICATED -DC_ONLY -DDLL_ONLY -DFEATURE_ANTICHEAT
+	$(DCFLAGSREL) -DBOTLIB -DDEDICATED -DC_ONLY -DDLL_ONLY
+	#$(DCFLAGSREL) -DBOTLIB -DDEDICATED -DC_ONLY -DDLL_ONLY -DFEATURE_ANTICHEAT
 server-debug: LDFLAGS := -m32 -ldl -lm
 server-debug: $(SVOBJS)
 	$(CC) -o wolfded_debug.x86 $(SVOBJS) $(LDFLAGS)
