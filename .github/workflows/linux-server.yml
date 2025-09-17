@@ -1,0 +1,59 @@
+name: Server-Ubuntu-Latest
+
+on:
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: "Optional commit SHA to build"
+        required: false
+        default: ""
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.commit != '' && github.event.inputs.commit || '' }}
+
+      - name: Install build dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            build-essential git gcc-multilib g++-multilib libc6-dev-i386 nasm \
+            libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxxf86vm-dev libxrandr-dev libxi-dev \
+            zlib1g-dev libpng-dev libjpeg-dev \
+            libssl-dev zip make
+
+      - name: Build wolfded + qagame
+        run: |
+          set -e
+
+          echo 'Building wolfded...'
+          make -C src/unix server-clean || true
+          make -C src/unix server
+
+          echo 'Building qagame...'
+          make -C src/game gameclean || true
+          make -C src/game all
+
+          echo 'Collecting artifacts...'
+          mkdir -p rtcwpub-artifacts
+          cp src/unix/wolfded.x86 rtcwpub-artifacts/ 2>/dev/null || true
+          cp src/game/qagame.mp.i386.so rtcwpub-artifacts/ 2>/dev/null || true
+
+          echo 'Artifacts collected in rtcwpub-artifacts'
+          ls -al rtcwpub-artifacts
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtcwpub-linux-server
+          path: rtcwpub-artifacts

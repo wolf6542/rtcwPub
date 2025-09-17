@@ -1,0 +1,44 @@
+name: Server-Windows-MSVS2022
+
+on:
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: "Optional commit SHA to build"
+        required: false
+        default: ""
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.commit != '' && github.event.inputs.commit || '' }}
+          
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build solution (Release Dedicated / Win32)
+        run: |
+          msbuild src\wolf.sln /t:Build /p:Configuration="Release Dedicated" /p:Platform=Win32
+
+      - name: Collect artifacts
+        shell: cmd
+        run: |
+          mkdir rtcwpub-artifacts
+          copy /Y src\Release_Dedicated\*.exe rtcwpub-artifacts\ 
+          copy /Y src\Release\*.dll rtcwpub-artifacts\ 
+          dir rtcwpub-artifacts
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtcwpub-windows-server
+          path: rtcwpub-artifacts
