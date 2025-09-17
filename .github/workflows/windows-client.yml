@@ -32,15 +32,15 @@ jobs:
       - name: Collect artifacts
         shell: cmd
         run: |
-          mkdir rtcwpub-artifacts
-          mkdir rtcwpub-artifacts\main
-          copy /Y src\Release\*.exe rtcwpub-artifacts\
-          copy /Y src\Release\*.dll rtcwpub-artifacts\main\
-          dir rtcwpub-artifacts
-          dir rtcwpub-artifacts\main
+          mkdir wolfse-artifacts
+          mkdir wolfse-artifacts\main
+          copy /Y src\Release\*.exe wolfse-artifacts\
+          copy /Y src\Release\*.dll wolfse-artifacts\main\
+          dir wolfse-artifacts
+          dir wolfse-artifacts\main
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rtcwpub-windows-client
-          path: rtcwpub-artifacts
+          name: wolfse-windows-client
+          path: wolfse-artifacts
